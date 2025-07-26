@@ -5,7 +5,12 @@ import { Button } from '@/components/ui/button';
 import { AuthProvider, useAuth } from '@/components/AuthProvider';
 import { Header } from '@/components/Header';
 import { supabase } from '@/integrations/supabase/client';
-import { Calendar, Clock, DollarSign, User } from 'lucide-react';
+import { Calendar, Clock, DollarSign, User, Settings, Image, Users, Info } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AdminAppointments } from '@/components/admin/AdminAppointments';
+import { AdminPortfolio } from '@/components/admin/AdminPortfolio';
+import { AdminServices } from '@/components/admin/AdminServices';
+import { AdminUsers } from '@/components/admin/AdminUsers';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -13,13 +18,17 @@ const DashboardPage = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const isAdmin = user?.email === 'tyronenorris@gmail.com';
+
   useEffect(() => {
     if (!user) {
       navigate('/auth');
       return;
     }
-    fetchAppointments();
-  }, [user, navigate]);
+    if (!isAdmin) {
+      fetchAppointments();
+    }
+  }, [user, navigate, isAdmin]);
 
   const fetchAppointments = async () => {
     try {
@@ -39,6 +48,58 @@ const DashboardPage = () => {
       setLoading(false);
     }
   };
+
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header user={user} />
+        
+        <div className="container mx-auto px-4 py-16">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-foreground mb-2">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Manage your hair braiding business</p>
+          </div>
+
+          <Tabs defaultValue="appointments" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="appointments" className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Appointments
+              </TabsTrigger>
+              <TabsTrigger value="portfolio" className="flex items-center gap-2">
+                <Image className="w-4 h-4" />
+                Portfolio
+              </TabsTrigger>
+              <TabsTrigger value="services" className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Services
+              </TabsTrigger>
+              <TabsTrigger value="users" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Users
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="appointments">
+              <AdminAppointments />
+            </TabsContent>
+
+            <TabsContent value="portfolio">
+              <AdminPortfolio />
+            </TabsContent>
+
+            <TabsContent value="services">
+              <AdminServices />
+            </TabsContent>
+
+            <TabsContent value="users">
+              <AdminUsers />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
