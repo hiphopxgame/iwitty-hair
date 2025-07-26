@@ -76,7 +76,7 @@ const DashboardPage = () => {
               </TabsTrigger>
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
-                Users
+                Clients
               </TabsTrigger>
             </TabsList>
 

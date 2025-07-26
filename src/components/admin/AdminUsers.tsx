@@ -21,14 +21,29 @@ export const AdminUsers = () => {
           appointments (
             id,
             status,
-            appointment_date
+            appointment_date,
+            appointment_time,
+            special_requests,
+            price_quote,
+            hair_styles (
+              name
+            )
           )
         `)
         .order('created_at', { ascending: false });
 
-      setUsers(data || []);
+      // Sort to show admin user first
+      const sortedData = data?.sort((a, b) => {
+        const aIsAdmin = a.user_id === 'admin-user-id'; // We'll get actual admin user ID
+        const bIsAdmin = b.user_id === 'admin-user-id';
+        if (aIsAdmin && !bIsAdmin) return -1;
+        if (!aIsAdmin && bIsAdmin) return 1;
+        return 0;
+      }) || [];
+
+      setUsers(sortedData);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching clients:', error);
     } finally {
       setLoading(false);
     }
@@ -44,11 +59,11 @@ export const AdminUsers = () => {
     return { total, completed, upcoming };
   };
 
-  if (loading) return <div>Loading users...</div>;
+  if (loading) return <div>Loading clients...</div>;
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">User Management</h2>
+      <h2 className="text-2xl font-bold">Client Management</h2>
       
       <div className="grid gap-4">
         {users.map((user: any) => {
@@ -112,6 +127,35 @@ export const AdminUsers = () => {
                     </p>
                   </div>
                 </div>
+                
+                {user.appointments && user.appointments.length > 0 && (
+                  <div className="mt-4 pt-4 border-t">
+                    <h4 className="font-medium mb-2">Recent Appointments</h4>
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {user.appointments.slice(0, 3).map((appointment: any) => (
+                        <div key={appointment.id} className="text-sm p-2 bg-muted/30 rounded">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p><strong>{appointment.hair_styles?.name || 'Service'}</strong></p>
+                              <p>{new Date(appointment.appointment_date).toLocaleDateString()} at {appointment.appointment_time}</p>
+                              {appointment.special_requests && (
+                                <p className="text-xs text-muted-foreground mt-1">{appointment.special_requests}</p>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <Badge variant={appointment.status === 'completed' ? 'default' : 'outline'}>
+                                {appointment.status}
+                              </Badge>
+                              {appointment.price_quote && (
+                                <p className="text-xs mt-1">${appointment.price_quote}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           );
@@ -121,7 +165,7 @@ export const AdminUsers = () => {
       {users.length === 0 && (
         <Card>
           <CardContent className="text-center py-8">
-            <p className="text-muted-foreground">No users registered yet</p>
+            <p className="text-muted-foreground">No clients registered yet</p>
           </CardContent>
         </Card>
       )}
