@@ -13,7 +13,7 @@ import { AdminServices } from '@/components/admin/AdminServices';
 import { AdminUsers } from '@/components/admin/AdminUsers';
 
 const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +21,8 @@ const DashboardPage = () => {
   const isAdmin = user?.email === 'tyronenorris@gmail.com';
 
   useEffect(() => {
+    if (authLoading) return; // Wait for auth to load
+    
     if (!user) {
       navigate('/auth');
       return;
@@ -28,7 +30,16 @@ const DashboardPage = () => {
     if (!isAdmin) {
       fetchAppointments();
     }
-  }, [user, navigate, isAdmin]);
+  }, [user, navigate, isAdmin, authLoading]);
+
+  // Show loading while auth is loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   const fetchAppointments = async () => {
     try {
