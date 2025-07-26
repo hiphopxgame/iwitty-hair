@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 export const AdminPortfolio = () => {
   const [portfolioImages, setPortfolioImages] = useState([]);
@@ -21,6 +22,8 @@ export const AdminPortfolio = () => {
     description: '',
     is_featured: false
   });
+  const [newStyleName, setNewStyleName] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -51,17 +54,79 @@ export const AdminPortfolio = () => {
     }
   };
 
+  const handleImageUpload = async (file: File) => {
+    try {
+      setUploading(true);
+      
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('portfolio')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio')
+        .getPublicUrl(filePath);
+
+      setNewItem({ ...newItem, image_url: publicUrl });
+      toast({ title: "Image uploaded successfully!" });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({ title: "Error uploading image", variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const createNewStyle = async () => {
+    if (!newStyleName.trim()) return null;
+    
+    try {
+      const { data, error } = await supabase
+        .from('hair_styles')
+        .insert([{ name: newStyleName.trim() }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      setNewStyleName('');
+      fetchData();
+      return data.id;
+    } catch (error) {
+      console.error('Error creating style:', error);
+      toast({ title: "Error creating style", variant: "destructive" });
+      return null;
+    }
+  };
+
   const saveItem = async () => {
     try {
+      let styleId = newItem.style_id;
+      
+      // Create new style if needed
+      if (newStyleName.trim() && !styleId) {
+        styleId = await createNewStyle();
+        if (!styleId) return;
+      }
+      
+      const itemData = { ...newItem, style_id: styleId };
+      
       if (editingItem) {
         await supabase
           .from('portfolio_images')
-          .update(newItem)
+          .update(itemData)
           .eq('id', editingItem.id);
       } else {
         await supabase
           .from('portfolio_images')
-          .insert([newItem]);
+          .insert([itemData]);
       }
       
       setNewItem({
@@ -73,10 +138,12 @@ export const AdminPortfolio = () => {
         description: '',
         is_featured: false
       });
+      setNewStyleName('');
       setEditingItem(null);
       fetchData();
     } catch (error) {
       console.error('Error saving item:', error);
+      toast({ title: "Error saving item", variant: "destructive" });
     }
   };
 
@@ -117,37 +184,78 @@ export const AdminPortfolio = () => {
                 value={newItem.title}
                 onChange={(e) => setNewItem({...newItem, title: e.target.value})}
               />
-              <Input
-                placeholder="Image URL"
-                value={newItem.image_url}
-                onChange={(e) => setNewItem({...newItem, image_url: e.target.value})}
-              />
-              <Select 
-                value={newItem.style_id} 
-                onValueChange={(value) => setNewItem({...newItem, style_id: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Hair Style" />
-                </SelectTrigger>
-                <SelectContent>
-                  {hairStyles.map((style: any) => (
-                    <SelectItem key={style.id} value={style.id}>
-                      {style.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Upload Image</label>
+                <div className="flex gap-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file);
+                    }}
+                    disabled={uploading}
+                  />
+                  {uploading && <Upload className="w-4 h-4 animate-spin" />}
+                </div>
+                {newItem.image_url && (
+                  <img src={newItem.image_url} alt="Preview" className="w-20 h-20 object-cover rounded" />
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Hair Style</label>
+                <Select 
+                  value={newItem.style_id} 
+                  onValueChange={(value) => setNewItem({...newItem, style_id: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Hair Style" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {hairStyles.map((style: any) => (
+                      <SelectItem key={style.id} value={style.id}>
+                        {style.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Or create new style..."
+                    value={newStyleName}
+                    onChange={(e) => setNewStyleName(e.target.value)}
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={async () => {
+                      const styleId = await createNewStyle();
+                      if (styleId) setNewItem({...newItem, style_id: styleId});
+                    }}
+                    disabled={!newStyleName.trim()}
+                  >
+                    Create
+                  </Button>
+                </div>
+              </div>
+              
               <Input
                 placeholder="Client Name (optional)"
                 value={newItem.client_name}
                 onChange={(e) => setNewItem({...newItem, client_name: e.target.value})}
               />
-              <Input
-                type="date"
-                placeholder="Completion Date"
-                value={newItem.completion_date}
-                onChange={(e) => setNewItem({...newItem, completion_date: e.target.value})}
-              />
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Completion Date (optional)</label>
+                <Input
+                  type="date"
+                  value={newItem.completion_date}
+                  onChange={(e) => setNewItem({...newItem, completion_date: e.target.value})}
+                />
+              </div>
             </div>
             <Textarea
               placeholder="Description"
