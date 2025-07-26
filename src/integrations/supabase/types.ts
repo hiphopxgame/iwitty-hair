@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          client_id: string
+          confirmation_sent: boolean | null
+          created_at: string
+          estimated_duration: number | null
+          id: string
+          price_quote: number | null
+          special_requests: string | null
+          status: string
+          style_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          client_id: string
+          confirmation_sent?: boolean | null
+          created_at?: string
+          estimated_duration?: number | null
+          id?: string
+          price_quote?: number | null
+          special_requests?: string | null
+          status?: string
+          style_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          client_id?: string
+          confirmation_sent?: boolean | null
+          created_at?: string
+          estimated_duration?: number | null
+          id?: string
+          price_quote?: number | null
+          special_requests?: string | null
+          status?: string
+          style_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "braiding_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "appointments_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "hair_styles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artist_applications: {
+        Row: {
+          created_at: string
+          id: string
+          processed_at: string | null
+          processed_by: string | null
+          reason: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          reason?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          reason?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       artist_content: {
         Row: {
           category: Database["public"]["Enums"]["content_category"]
@@ -152,6 +242,57 @@ export type Database = {
           payment_status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      braiding_profiles: {
+        Row: {
+          address: string | null
+          allergies: string | null
+          city: string | null
+          created_at: string
+          first_name: string
+          hair_type: string | null
+          id: string
+          last_name: string
+          phone: string | null
+          preferred_contact: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          allergies?: string | null
+          city?: string | null
+          created_at?: string
+          first_name: string
+          hair_type?: string | null
+          id?: string
+          last_name: string
+          phone?: string | null
+          preferred_contact?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          allergies?: string | null
+          city?: string | null
+          created_at?: string
+          first_name?: string
+          hair_type?: string | null
+          id?: string
+          last_name?: string
+          phone?: string | null
+          preferred_contact?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -537,6 +678,33 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      hair_styles: {
+        Row: {
+          base_price: number | null
+          created_at: string
+          description: string | null
+          duration_hours: number | null
+          id: string
+          name: string
+        }
+        Insert: {
+          base_price?: number | null
+          created_at?: string
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          name: string
+        }
+        Update: {
+          base_price?: number | null
+          created_at?: string
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -1055,6 +1223,51 @@ export type Database = {
         }
         Relationships: []
       }
+      import_batches: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          file_type: string
+          filename: string
+          id: string
+          notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          total_events: number
+          total_venues: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          file_type: string
+          filename: string
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          total_events?: number
+          total_venues?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          file_type?: string
+          filename?: string
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          total_events?: number
+          total_venues?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       music_videos: {
         Row: {
           approved_at: string | null
@@ -1211,7 +1424,7 @@ export type Database = {
             foreignKeyName: "oregon_tires_appointments_assigned_employee_id_fkey"
             columns: ["assigned_employee_id"]
             isOneToOne: false
-            referencedRelation: "oregon_tires_employees"
+            referencedRelation: "oretir_employees"
             referencedColumns: ["id"]
           },
           {
@@ -1262,7 +1475,166 @@ export type Database = {
         }
         Relationships: []
       }
-      oregon_tires_custom_hours: {
+      oretir_admin_notifications: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      oretir_appointments: {
+        Row: {
+          actual_duration_minutes: number | null
+          actual_duration_seconds: number | null
+          assigned_employee_id: string | null
+          completed_at: string | null
+          created_at: string
+          customer_address: string | null
+          customer_city: string | null
+          customer_state: string | null
+          customer_zip: string | null
+          email: string
+          first_name: string
+          id: string
+          language: string
+          last_name: string
+          license_plate: string | null
+          message: string | null
+          phone: string | null
+          preferred_date: string
+          preferred_time: string
+          service: string
+          service_location: string | null
+          started_at: string | null
+          status: string
+          tire_size: string | null
+          travel_cost_estimate: number | null
+          travel_distance_miles: number | null
+          vehicle_id: string | null
+          vin: string | null
+        }
+        Insert: {
+          actual_duration_minutes?: number | null
+          actual_duration_seconds?: number | null
+          assigned_employee_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_address?: string | null
+          customer_city?: string | null
+          customer_state?: string | null
+          customer_zip?: string | null
+          email: string
+          first_name: string
+          id?: string
+          language?: string
+          last_name: string
+          license_plate?: string | null
+          message?: string | null
+          phone?: string | null
+          preferred_date: string
+          preferred_time: string
+          service: string
+          service_location?: string | null
+          started_at?: string | null
+          status?: string
+          tire_size?: string | null
+          travel_cost_estimate?: number | null
+          travel_distance_miles?: number | null
+          vehicle_id?: string | null
+          vin?: string | null
+        }
+        Update: {
+          actual_duration_minutes?: number | null
+          actual_duration_seconds?: number | null
+          assigned_employee_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_address?: string | null
+          customer_city?: string | null
+          customer_state?: string | null
+          customer_zip?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          language?: string
+          last_name?: string
+          license_plate?: string | null
+          message?: string | null
+          phone?: string | null
+          preferred_date?: string
+          preferred_time?: string
+          service?: string
+          service_location?: string | null
+          started_at?: string | null
+          status?: string
+          tire_size?: string | null
+          travel_cost_estimate?: number | null
+          travel_distance_miles?: number | null
+          vehicle_id?: string | null
+          vin?: string | null
+        }
+        Relationships: []
+      }
+      oretir_contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          language: string
+          last_name: string
+          message: string
+          phone: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          language?: string
+          last_name: string
+          message: string
+          phone?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          language?: string
+          last_name?: string
+          message?: string
+          phone?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      oretir_custom_hours: {
         Row: {
           closing_time: string | null
           created_at: string
@@ -1295,7 +1667,7 @@ export type Database = {
         }
         Relationships: []
       }
-      oregon_tires_email_logs: {
+      oretir_email_logs: {
         Row: {
           appointment_id: string | null
           body: string
@@ -1345,7 +1717,7 @@ export type Database = {
           },
         ]
       }
-      oregon_tires_employee_schedules: {
+      oretir_employee_schedules: {
         Row: {
           created_at: string
           employee_id: string
@@ -1381,12 +1753,12 @@ export type Database = {
             foreignKeyName: "oregon_tires_employee_schedules_employee_id_fkey"
             columns: ["employee_id"]
             isOneToOne: false
-            referencedRelation: "oregon_tires_employees"
+            referencedRelation: "oretir_employees"
             referencedColumns: ["id"]
           },
         ]
       }
-      oregon_tires_employees: {
+      oretir_employees: {
         Row: {
           created_at: string
           email: string | null
@@ -1419,7 +1791,7 @@ export type Database = {
         }
         Relationships: []
       }
-      oregon_tires_gallery_images: {
+      oretir_gallery_images: {
         Row: {
           created_at: string
           description: string | null
@@ -1455,7 +1827,31 @@ export type Database = {
         }
         Relationships: []
       }
-      oregon_tires_service_images: {
+      oretir_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          is_admin: boolean
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          is_admin?: boolean
+          project_id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      oretir_service_images: {
         Row: {
           created_at: string
           id: string
@@ -1490,152 +1886,6 @@ export type Database = {
           scale?: number
           service_key?: string
           title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      oretir_admin_notifications: {
-        Row: {
-          appointment_id: string | null
-          created_at: string
-          id: string
-          message: string
-          read: boolean
-          title: string
-          type: string
-        }
-        Insert: {
-          appointment_id?: string | null
-          created_at?: string
-          id?: string
-          message: string
-          read?: boolean
-          title: string
-          type: string
-        }
-        Update: {
-          appointment_id?: string | null
-          created_at?: string
-          id?: string
-          message?: string
-          read?: boolean
-          title?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oretir_admin_notifications_appointment_id_fkey"
-            columns: ["appointment_id"]
-            isOneToOne: false
-            referencedRelation: "oretir_appointments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      oretir_appointments: {
-        Row: {
-          appointment_date: string
-          approved_at: string | null
-          approved_by: string | null
-          created_at: string
-          customer_email: string
-          customer_name: string
-          customer_phone: string | null
-          duration_minutes: number
-          end_time: string
-          id: string
-          message: string | null
-          service_type: string
-          start_time: string
-          station_number: number
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          appointment_date: string
-          approved_at?: string | null
-          approved_by?: string | null
-          created_at?: string
-          customer_email: string
-          customer_name: string
-          customer_phone?: string | null
-          duration_minutes: number
-          end_time: string
-          id?: string
-          message?: string | null
-          service_type: string
-          start_time: string
-          station_number: number
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          appointment_date?: string
-          approved_at?: string | null
-          approved_by?: string | null
-          created_at?: string
-          customer_email?: string
-          customer_name?: string
-          customer_phone?: string | null
-          duration_minutes?: number
-          end_time?: string
-          id?: string
-          message?: string | null
-          service_type?: string
-          start_time?: string
-          station_number?: number
-          status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      oretir_contact_messages: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          message: string
-          name: string
-          phone: string | null
-          subject: string | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          message: string
-          name: string
-          phone?: string | null
-          subject?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          message?: string
-          name?: string
-          phone?: string | null
-          subject?: string | null
-        }
-        Relationships: []
-      }
-      oretir_profiles: {
-        Row: {
-          created_at: string
-          id: string
-          is_admin: boolean
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          is_admin?: boolean
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_admin?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -2066,6 +2316,225 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_images: {
+        Row: {
+          client_name: string | null
+          completion_date: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string
+          is_featured: boolean | null
+          style_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url: string
+          is_featured?: boolean | null
+          style_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_name?: string | null
+          completion_date?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          is_featured?: boolean | null
+          style_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_images_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "hair_styles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staging_events: {
+        Row: {
+          api_source: string | null
+          category: string
+          created_at: string
+          description: string | null
+          end_time: string | null
+          external_id: string | null
+          facebook_url: string | null
+          id: string
+          image_url: string | null
+          import_batch_id: string
+          instagram_url: string | null
+          is_recurring: boolean | null
+          price_display: string | null
+          recurrence_end_date: string | null
+          recurrence_pattern: string | null
+          recurrence_type: string | null
+          start_date: string
+          start_time: string | null
+          ticket_url: string | null
+          title: string
+          twitter_url: string | null
+          venue_address: string | null
+          venue_city: string | null
+          venue_name: string
+          venue_state: string | null
+          venue_zip: string | null
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          api_source?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          external_id?: string | null
+          facebook_url?: string | null
+          id?: string
+          image_url?: string | null
+          import_batch_id: string
+          instagram_url?: string | null
+          is_recurring?: boolean | null
+          price_display?: string | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
+          recurrence_type?: string | null
+          start_date: string
+          start_time?: string | null
+          ticket_url?: string | null
+          title: string
+          twitter_url?: string | null
+          venue_address?: string | null
+          venue_city?: string | null
+          venue_name: string
+          venue_state?: string | null
+          venue_zip?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          api_source?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          external_id?: string | null
+          facebook_url?: string | null
+          id?: string
+          image_url?: string | null
+          import_batch_id?: string
+          instagram_url?: string | null
+          is_recurring?: boolean | null
+          price_display?: string | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
+          recurrence_type?: string | null
+          start_date?: string
+          start_time?: string | null
+          ticket_url?: string | null
+          title?: string
+          twitter_url?: string | null
+          venue_address?: string | null
+          venue_city?: string | null
+          venue_name?: string
+          venue_state?: string | null
+          venue_zip?: string | null
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staging_events_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staging_venues: {
+        Row: {
+          address: string | null
+          ages: string | null
+          api_source: string | null
+          city: string | null
+          created_at: string
+          facebook_url: string | null
+          id: string
+          image_urls: string[] | null
+          import_batch_id: string
+          instagram_url: string | null
+          name: string
+          phone: string | null
+          state: string | null
+          twitter_url: string | null
+          website: string | null
+          youtube_url: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          ages?: string | null
+          api_source?: string | null
+          city?: string | null
+          created_at?: string
+          facebook_url?: string | null
+          id?: string
+          image_urls?: string[] | null
+          import_batch_id: string
+          instagram_url?: string | null
+          name: string
+          phone?: string | null
+          state?: string | null
+          twitter_url?: string | null
+          website?: string | null
+          youtube_url?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          ages?: string | null
+          api_source?: string | null
+          city?: string | null
+          created_at?: string
+          facebook_url?: string | null
+          id?: string
+          image_urls?: string[] | null
+          import_batch_id?: string
+          instagram_url?: string | null
+          name?: string
+          phone?: string | null
+          state?: string | null
+          twitter_url?: string | null
+          website?: string | null
+          youtube_url?: string | null
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staging_venues_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_events: {
         Row: {
           api_source: string | null
@@ -2295,6 +2764,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_import_batch: {
+        Args: { batch_id: string }
+        Returns: undefined
+      }
       create_admin_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -2314,6 +2787,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_current_user_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -2326,9 +2803,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_super_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       set_admin_by_email: {
-        Args: { user_email: string }
-        Returns: undefined
+        Args:
+          | { user_email: string }
+          | { user_email: string; admin_status?: boolean }
+          | {
+              user_email: string
+              admin_status?: boolean
+              target_project_id?: string
+            }
+        Returns: boolean
       }
       setup_admin_user: {
         Args: Record<PropertyKey, never>
