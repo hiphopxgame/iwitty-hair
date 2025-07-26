@@ -160,7 +160,7 @@ export const AdminPortfolio = () => {
     }
   };
 
-  if (loading) return <div>Loading portfolio...</div>;
+  if (loading) return <div className="flex justify-center py-8">Loading portfolio...</div>;
 
   return (
     <div className="space-y-6">
@@ -307,6 +307,14 @@ export const AdminPortfolio = () => {
           </Card>
         ))}
       </div>
+      
+      {portfolioImages.length === 0 && !editingItem && (
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">No portfolio images yet</p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

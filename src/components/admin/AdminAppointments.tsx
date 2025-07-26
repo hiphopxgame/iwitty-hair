@@ -55,7 +55,7 @@ export const AdminAppointments = () => {
     }
   };
 
-  if (loading) return <div>Loading appointments...</div>;
+  if (loading) return <div className="flex justify-center py-8">Loading appointments...</div>;
 
   return (
     <div className="space-y-6">
@@ -140,6 +140,14 @@ export const AdminAppointments = () => {
           </Card>
         ))}
       </div>
+      
+      {appointments.length === 0 && (
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">No appointments yet</p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

@@ -81,7 +81,7 @@ export const AdminServices = () => {
     }
   };
 
-  if (loading) return <div>Loading services...</div>;
+  if (loading) return <div className="flex justify-center py-8">Loading services...</div>;
 
   return (
     <div className="space-y-6">
@@ -178,6 +178,14 @@ export const AdminServices = () => {
           </Card>
         ))}
       </div>
+      
+      {services.length === 0 && !editingService && (
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">No services created yet</p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
