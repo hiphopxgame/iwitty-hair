@@ -74,6 +74,21 @@ const BookAppointmentPage = () => {
     const formData = new FormData(e.currentTarget);
     
     try {
+      // First ensure user profile exists and update contact info
+      const { error: profileError } = await supabase
+        .from('braiding_profiles')
+        .upsert({
+          user_id: user.id,
+          first_name: formData.get('firstName') as string,
+          last_name: formData.get('lastName') as string,
+          phone: formData.get('phone') as string,
+        });
+
+      if (profileError) {
+        console.error('Profile update error:', profileError);
+        // Continue anyway, as profile might already exist
+      }
+
       const { error } = await supabase
         .from('appointments')
         .insert({
@@ -215,6 +230,63 @@ const BookAppointmentPage = () => {
               </Card>
             </div>
 
+            {/* Contact Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <User className="w-5 h-5 mr-2" />
+                  Contact Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      required
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      required
+                      placeholder="Enter your last name"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="Enter your email address"
+                    defaultValue={user?.email || ''}
+                    readOnly={!!user?.email}
+                    className={user?.email ? "bg-muted" : ""}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Special Requests */}
             <Card>
               <CardHeader>
@@ -236,7 +308,7 @@ const BookAppointmentPage = () => {
               </CardContent>
             </Card>
 
-            {/* Contact Information */}
+            {/* How It Works */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
