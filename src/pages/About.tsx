@@ -3,7 +3,7 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Award, Users, Clock } from 'lucide-react';
+import { Star, Award, Users, Clock, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AboutPage = () => {
@@ -151,6 +151,22 @@ const AboutPage = () => {
             </Button>
             <Button onClick={() => navigate('/portfolio')} variant="outline" size="lg">
               View Portfolio
+            </Button>
+          </div>
+        </section>
+
+        {/* Additional Call to Action */}
+        <section className="py-16 bg-gradient-to-r from-primary/10 to-accent/10 mt-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Start Your Hair Journey Today
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Experience the artistry and expertise that has made us Portland's premier braiding destination.
+            </p>
+            <Button variant="hero" size="lg" onClick={() => navigate('/book')}>
+              <Calendar className="w-5 h-5 mr-2" />
+              Book Your Appointment
             </Button>
           </div>
         </section>

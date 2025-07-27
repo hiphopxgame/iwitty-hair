@@ -275,7 +275,7 @@ const PortfolioPage = () => {
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Book your appointment today and let us create a beautiful braided style that's uniquely you.
           </p>
-          <Button variant="hero" size="lg" onClick={() => navigate('/book-appointment')}>
+          <Button variant="hero" size="lg" onClick={() => navigate('/book')}>
             <Calendar className="w-5 h-5 mr-2" />
             Book Your Appointment
           </Button>
