@@ -18,6 +18,7 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [adminAccounts, setAdminAccounts] = useState<any[]>([]);
+  const [currentAdminDetails, setCurrentAdminDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   // Check if the current user is an admin using the new function
@@ -84,6 +85,12 @@ const DashboardPage = () => {
         .order('created_at', { ascending: true });
 
       setAdminAccounts(data || []);
+      
+      // Find current admin details
+      const currentAdmin = data?.find(admin => 
+        admin.email.toLowerCase() === user.email.toLowerCase()
+      );
+      setCurrentAdminDetails(currentAdmin);
     } catch (error) {
       console.error('Error fetching admin accounts:', error);
     } finally {
@@ -101,6 +108,35 @@ const DashboardPage = () => {
             <h1 className="text-3xl font-bold text-foreground mb-2">Admin Dashboard</h1>
             <p className="text-muted-foreground">Manage your hair braiding business</p>
           </div>
+
+          {/* Current Admin Info */}
+          {currentAdminDetails && (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  Currently Logged In
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">{currentAdminDetails.full_name}</h3>
+                    <p className="text-muted-foreground">{currentAdminDetails.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Admin since: {new Date(currentAdminDetails.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="default">Active Admin</Badge>
+                    {currentAdminDetails.email === 'tyronenorris@gmail.com' && (
+                      <Badge variant="outline">Super Admin</Badge>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <Tabs defaultValue="appointments" className="space-y-6">
             <TabsList className="grid w-full grid-cols-5">
