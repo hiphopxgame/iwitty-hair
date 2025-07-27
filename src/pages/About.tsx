@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, Award, Users, Clock, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import aboutOwnerImage from '@/assets/about-owner.jpg';
+
 
 const AboutPage = () => {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const AboutPage = () => {
           </div>
           <div className="relative">
             <img 
-              src={aboutOwnerImage} 
+              src="/lovable-uploads/f0bbf33a-1632-4423-8d51-410e1aae89c1.png" 
               alt="Our master braider with 40+ years of experience" 
               className="rounded-lg shadow-lg w-full h-[400px] object-cover"
             />
