@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_accounts: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean | null
+          project_id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          project_id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          project_id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           admin_comments: string | null
@@ -2814,6 +2847,10 @@ export type Database = {
         Returns: boolean
       }
       is_hiphop_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_iwitty_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }

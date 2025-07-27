@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { AuthProvider, useAuth } from '@/components/AuthProvider';
 import { Header } from '@/components/Header';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,9 +17,21 @@ const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
+  const [adminAccounts, setAdminAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const isAdmin = user?.email === 'tyronenorris@gmail.com';
+  // Check if the current user is an admin using the new function
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (user) {
+        const { data } = await supabase.rpc('is_iwitty_admin');
+        setIsAdmin(data || false);
+      }
+    };
+    checkAdmin();
+  }, [user]);
 
   useEffect(() => {
     if (authLoading) return; // Wait for auth to load
@@ -29,6 +42,8 @@ const DashboardPage = () => {
     }
     if (!isAdmin) {
       fetchAppointments();
+    } else {
+      fetchAdminAccounts();
     }
   }, [user, navigate, isAdmin, authLoading]);
 
@@ -60,6 +75,22 @@ const DashboardPage = () => {
     }
   };
 
+  const fetchAdminAccounts = async () => {
+    try {
+      const { data } = await supabase
+        .from('admin_accounts')
+        .select('*')
+        .eq('project_id', 'iwitty-hair')
+        .order('created_at', { ascending: true });
+
+      setAdminAccounts(data || []);
+    } catch (error) {
+      console.error('Error fetching admin accounts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (isAdmin) {
     return (
       <div className="min-h-screen bg-background">
@@ -72,7 +103,7 @@ const DashboardPage = () => {
           </div>
 
           <Tabs defaultValue="appointments" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="appointments" className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 Appointments
@@ -88,6 +119,10 @@ const DashboardPage = () => {
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 Clients
+              </TabsTrigger>
+              <TabsTrigger value="admins" className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Admins
               </TabsTrigger>
             </TabsList>
 
@@ -105,6 +140,44 @@ const DashboardPage = () => {
 
             <TabsContent value="users">
               <AdminUsers />
+            </TabsContent>
+            
+            <TabsContent value="admins">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-foreground">Admin Accounts</h2>
+                </div>
+                
+                {loading ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">Loading admin accounts...</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {adminAccounts.map((admin) => (
+                      <Card key={admin.id} className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-semibold text-foreground">{admin.full_name}</h3>
+                            <p className="text-muted-foreground">{admin.email}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Created: {new Date(admin.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant={admin.is_active ? "default" : "secondary"}>
+                              {admin.is_active ? "Active" : "Inactive"}
+                            </Badge>
+                            {admin.email === 'tyronenorris@gmail.com' && (
+                              <Badge variant="outline">Super Admin</Badge>
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
             </TabsContent>
           </Tabs>
         </div>
