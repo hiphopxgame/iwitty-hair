@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, Award, Users, Clock, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import aboutOwnerImage from '@/assets/about-owner.jpg';
 
 const AboutPage = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const AboutPage = () => {
             About Our Artistry
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            With over a decade of experience in traditional and contemporary braiding techniques, 
+            With over 40+ years of experience in traditional and contemporary braiding techniques, 
             we transform hair into beautiful works of art that celebrate culture and individual style.
           </p>
         </section>
@@ -45,8 +46,8 @@ const AboutPage = () => {
           </div>
           <div className="relative">
             <img 
-              src="https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=800&q=80" 
-              alt="Professional braiding workspace" 
+              src={aboutOwnerImage} 
+              alt="Our master braider with 40+ years of experience" 
               className="rounded-lg shadow-lg w-full h-[400px] object-cover"
             />
           </div>
@@ -66,7 +67,7 @@ const AboutPage = () => {
             <Card className="text-center">
               <CardContent className="p-6">
                 <Clock className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-foreground mb-2">10+</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-2">40+</h3>
                 <p className="text-muted-foreground">Years Experience</p>
               </CardContent>
             </Card>
@@ -155,21 +156,6 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* Additional Call to Action */}
-        <section className="py-16 bg-gradient-to-r from-primary/10 to-accent/10 mt-16">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              Start Your Hair Journey Today
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Experience the artistry and expertise that has made us Portland's premier braiding destination.
-            </p>
-            <Button variant="hero" size="lg" onClick={() => navigate('/book')}>
-              <Calendar className="w-5 h-5 mr-2" />
-              Book Your Appointment
-            </Button>
-          </div>
-        </section>
       </main>
     </div>
   );
