@@ -292,9 +292,6 @@ const BookAppointmentPage = () => {
                     type="email"
                     required
                     placeholder="Enter your email address"
-                    defaultValue={user?.email || ''}
-                    readOnly={!!user?.email}
-                    className={user?.email ? "bg-muted" : ""}
                   />
                 </div>
                 <div>
