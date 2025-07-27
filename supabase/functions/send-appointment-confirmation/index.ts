@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { formatInTimeZone } from "npm:date-fns-tz@3.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -40,18 +41,20 @@ const handler = async (req: Request): Promise<Response> => {
       estimatedDuration,
     }: AppointmentEmailRequest = await req.json();
 
-    // Format date and time for display
-    const formattedDate = new Date(appointmentDate).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    // Format date and time for display in Eastern Time
+    const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
+    
+    const formattedDate = formatInTimeZone(
+      appointmentDateTime,
+      'America/New_York',
+      'EEEE, MMMM do, yyyy'
+    );
 
-    const formattedTime = new Date(`2000-01-01T${appointmentTime}`).toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: '2-digit'
-    });
+    const formattedTime = formatInTimeZone(
+      appointmentDateTime,
+      'America/New_York',
+      'h:mm a zzz'
+    );
 
     const emailResponse = await resend.emails.send({
       from: "Braiding Studio <onboarding@resend.dev>",

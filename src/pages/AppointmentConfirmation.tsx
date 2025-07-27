@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatInTimeZone } from 'date-fns-tz';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -108,19 +109,13 @@ const AppointmentConfirmationPage = () => {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    const date = new Date(dateString);
+    return formatInTimeZone(date, 'America/New_York', 'EEEE, MMMM do, yyyy');
   };
 
   const formatTime = (timeString: string) => {
-    return new Date(`2000-01-01T${timeString}`).toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: '2-digit'
-    });
+    const date = new Date(`2000-01-01T${timeString}`);
+    return formatInTimeZone(date, 'America/New_York', 'h:mm a zzz');
   };
 
   return (
@@ -162,7 +157,7 @@ const AppointmentConfirmationPage = () => {
                   <Clock className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-semibold">Time</p>
-                    <p className="text-muted-foreground">{formatTime(appointment.appointment_time)}</p>
+                    <p className="text-muted-foreground">{formatTime(appointment.appointment_time)} (Eastern Time)</p>
                   </div>
                 </div>
               </div>
