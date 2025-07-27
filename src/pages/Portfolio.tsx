@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -28,6 +29,7 @@ interface HairStyle {
 const PortfolioPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [images, setImages] = useState<PortfolioImage[]>([]);
   const [styles, setStyles] = useState<HairStyle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -273,7 +275,7 @@ const PortfolioPage = () => {
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Book your appointment today and let us create a beautiful braided style that's uniquely you.
           </p>
-          <Button variant="hero" size="lg">
+          <Button variant="hero" size="lg" onClick={() => navigate('/book-appointment')}>
             <Calendar className="w-5 h-5 mr-2" />
             Book Your Appointment
           </Button>
