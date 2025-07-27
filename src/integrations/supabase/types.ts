@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
+          admin_comments: string | null
           appointment_date: string
           appointment_time: string
           client_id: string
@@ -30,6 +31,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admin_comments?: string | null
           appointment_date: string
           appointment_time: string
           client_id: string
@@ -44,6 +46,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admin_comments?: string | null
           appointment_date?: string
           appointment_time?: string
           client_id?: string
@@ -1515,6 +1518,7 @@ export type Database = {
         Row: {
           actual_duration_minutes: number | null
           actual_duration_seconds: number | null
+          admin_notes: string | null
           assigned_employee_id: string | null
           completed_at: string | null
           created_at: string
@@ -1545,6 +1549,7 @@ export type Database = {
         Insert: {
           actual_duration_minutes?: number | null
           actual_duration_seconds?: number | null
+          admin_notes?: string | null
           assigned_employee_id?: string | null
           completed_at?: string | null
           created_at?: string
@@ -1575,6 +1580,7 @@ export type Database = {
         Update: {
           actual_duration_minutes?: number | null
           actual_duration_seconds?: number | null
+          admin_notes?: string | null
           assigned_employee_id?: string | null
           completed_at?: string | null
           created_at?: string
