@@ -89,7 +89,7 @@ const BookAppointmentPage = () => {
         // Continue anyway, as profile might already exist
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('appointments')
         .insert({
           client_id: user.id,
@@ -98,16 +98,37 @@ const BookAppointmentPage = () => {
           appointment_time: formData.get('time') as string,
           special_requests: formData.get('requests') as string || null,
           estimated_duration: selectedStyle?.duration_hours || 3,
-        });
+        })
+        .select();
 
       if (error) throw error;
 
+      // Send confirmation email
+      try {
+        await supabase.functions.invoke('send-appointment-confirmation', {
+          body: {
+            appointmentId: data[0].id,
+            clientName: `${formData.get('firstName')} ${formData.get('lastName')}`,
+            clientEmail: user.email,
+            clientPhone: formData.get('phone') as string,
+            styleName: selectedStyle?.name || 'Custom Style',
+            appointmentDate: formData.get('date') as string,
+            appointmentTime: formData.get('time') as string,
+            specialRequests: formData.get('requests') as string || null,
+            estimatedDuration: selectedStyle?.duration_hours || 3,
+          },
+        });
+      } catch (emailError) {
+        console.error('Error sending confirmation email:', emailError);
+        // Continue anyway - appointment was created successfully
+      }
+
       toast({
         title: "Appointment requested!",
-        description: "We'll contact you soon with a price quote and confirmation.",
+        description: "Check your email for confirmation details.",
       });
 
-      navigate('/dashboard');
+      navigate(`/appointment-confirmation?id=${data[0].id}`);
     } catch (error: any) {
       console.error('Error booking appointment:', error);
       toast({

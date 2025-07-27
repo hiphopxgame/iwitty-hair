@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Portfolio from "./pages/Portfolio";
 import BookAppointment from "./pages/BookAppointment";
+import AppointmentConfirmation from "./pages/AppointmentConfirmation";
 import Dashboard from "./pages/Dashboard";
 import Services from "./pages/Services";
 import About from "./pages/About";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/book" element={<BookAppointment />} />
+          <Route path="/appointment-confirmation" element={<AppointmentConfirmation />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/services" element={<Services />} />
           <Route path="/about" element={<About />} />
