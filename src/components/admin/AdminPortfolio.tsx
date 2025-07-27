@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Edit, Trash2, Upload } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { FixPortfolioImages } from './FixPortfolioImages';
 
 export const AdminPortfolio = () => {
   const [portfolioImages, setPortfolioImages] = useState([]);
@@ -171,6 +172,8 @@ export const AdminPortfolio = () => {
           Add Image
         </Button>
       </div>
+
+      <FixPortfolioImages />
 
       {(editingItem !== null) && (
         <Card>

@@ -233,6 +233,10 @@ const PortfolioPage = () => {
                         alt={image.title}
                         className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
                         loading="lazy"
+                        onError={(e) => {
+                          console.error(`Failed to load image: ${image.image_url}`);
+                          (e.target as HTMLImageElement).src = '/placeholder.svg';
+                        }}
                       />
                       {image.is_featured && (
                         <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
