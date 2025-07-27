@@ -37,6 +37,7 @@ const BookAppointmentPage = () => {
       const { data, error } = await supabase
         .from('hair_styles')
         .select('*')
+        .eq('project_id', 'iwitty-hair')
         .order('name');
 
       if (error) throw error;
@@ -82,6 +83,7 @@ const BookAppointmentPage = () => {
           first_name: formData.get('firstName') as string,
           last_name: formData.get('lastName') as string,
           phone: formData.get('phone') as string,
+          project_id: 'iwitty-hair',
         });
 
       if (profileError) {
