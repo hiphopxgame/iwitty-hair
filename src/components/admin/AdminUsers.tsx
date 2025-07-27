@@ -30,18 +30,15 @@ export const AdminUsers = () => {
             )
           )
         `)
+        .eq('project_id', 'iwitty-hair')
         .order('created_at', { ascending: false });
 
-      // Sort to show admin user first
-      const sortedData = data?.sort((a, b) => {
-        const aIsAdmin = a.user_id === 'admin-user-id'; // We'll get actual admin user ID
-        const bIsAdmin = b.user_id === 'admin-user-id';
-        if (aIsAdmin && !bIsAdmin) return -1;
-        if (!aIsAdmin && bIsAdmin) return 1;
-        return 0;
-      }) || [];
+      // Filter to only show clients who have at least one appointment
+      const clientsWithAppointments = data?.filter(user => 
+        user.appointments && user.appointments.length > 0
+      ) || [];
 
-      setUsers(sortedData);
+      setUsers(clientsWithAppointments);
     } catch (error) {
       console.error('Error fetching clients:', error);
     } finally {
@@ -165,7 +162,10 @@ export const AdminUsers = () => {
       {users.length === 0 && (
         <Card>
           <CardContent className="text-center py-8">
-            <p className="text-muted-foreground">No clients registered yet</p>
+            <p className="text-muted-foreground">No clients with appointments found</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Clients appear here after they book their first appointment
+            </p>
           </CardContent>
         </Card>
       )}
