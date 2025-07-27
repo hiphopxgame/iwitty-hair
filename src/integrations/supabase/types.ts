@@ -254,6 +254,7 @@ export type Database = {
           allergies: string | null
           city: string | null
           created_at: string
+          email: string | null
           first_name: string
           hair_type: string | null
           id: string
@@ -271,6 +272,7 @@ export type Database = {
           allergies?: string | null
           city?: string | null
           created_at?: string
+          email?: string | null
           first_name: string
           hair_type?: string | null
           id?: string
@@ -288,6 +290,7 @@ export type Database = {
           allergies?: string | null
           city?: string | null
           created_at?: string
+          email?: string | null
           first_name?: string
           hair_type?: string | null
           id?: string
