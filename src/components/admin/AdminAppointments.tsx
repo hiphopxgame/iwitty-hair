@@ -21,15 +21,15 @@ interface Appointment {
   admin_comments?: string;
   price_quote?: number;
   estimated_duration?: number;
-  hair_styles?: {
+  iwitty_hair_styles?: {
     name: string;
-  };
-  braiding_profiles?: {
+  } | null;
+  iwitty_profiles?: {
     first_name: string;
     last_name: string;
     phone?: string;
     user_id: string;
-  };
+  } | null;
   client_email?: string;
 }
 
@@ -55,11 +55,11 @@ export const AdminAppointments = () => {
   const fetchAppointments = async () => {
     try {
       const { data: appointmentsData, error } = await supabase
-        .from('appointments')
+        .from('iwitty_appointments')
         .select(`
           *,
-          hair_styles (name),
-          braiding_profiles (first_name, last_name, phone, user_id)
+          iwitty_hair_styles (name),
+          iwitty_profiles (first_name, last_name, phone, user_id)
         `)
         .order('appointment_date', { ascending: true });
 
@@ -69,15 +69,15 @@ export const AdminAppointments = () => {
       const appointmentsWithEmails = await Promise.all(
         (appointmentsData || []).map(async (appointment) => {
           // For now, we'll use the user_id to potentially fetch from a profile or set a placeholder
-          // In a real implementation, you might want to store email in braiding_profiles table
+          // In a real implementation, you might want to store email in iwitty_profiles table
           return {
             ...appointment,
-            client_email: 'client@example.com' // Placeholder - update this based on your auth setup
+            client_email: appointment.iwitty_profiles?.user_id || 'client@example.com' // Placeholder - update this based on your auth setup
           };
         })
       );
 
-      setAppointments(appointmentsWithEmails);
+      setAppointments(appointmentsWithEmails as Appointment[]);
     } catch (error) {
       console.error('Error fetching appointments:', error);
       toast({
@@ -107,7 +107,7 @@ export const AdminAppointments = () => {
       }
 
       const { error } = await supabase
-        .from('appointments')
+        .from('iwitty_appointments')
         .update(updateData)
         .eq('id', editingAppointment.id);
 
@@ -149,7 +149,7 @@ export const AdminAppointments = () => {
   const quickStatusUpdate = async (appointmentId: string, newStatus: string) => {
     try {
       const { error } = await supabase
-        .from('appointments')
+        .from('iwitty_appointments')
         .update({ status: newStatus, updated_at: new Date().toISOString() })
         .eq('id', appointmentId);
 
@@ -195,7 +195,7 @@ export const AdminAppointments = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle className="text-lg">
-                    {appointment.braiding_profiles?.first_name} {appointment.braiding_profiles?.last_name}
+                    {appointment.iwitty_profiles?.first_name} {appointment.iwitty_profiles?.last_name}
                   </CardTitle>
                   <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
@@ -299,16 +299,16 @@ export const AdminAppointments = () => {
                     <Mail className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">{appointment.client_email || 'Email not available'}</span>
                   </div>
-                  {appointment.braiding_profiles?.phone && (
+                  {appointment.iwitty_profiles?.phone && (
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{appointment.braiding_profiles.phone}</span>
+                      <span className="text-sm">{appointment.iwitty_profiles.phone}</span>
                     </div>
                   )}
-                  {appointment.hair_styles?.name && (
+                  {appointment.iwitty_hair_styles?.name && (
                     <div>
                       <span className="text-sm font-medium">Service: </span>
-                      <span className="text-sm">{appointment.hair_styles.name}</span>
+                      <span className="text-sm">{appointment.iwitty_hair_styles.name}</span>
                     </div>
                   )}
                   {appointment.price_quote && (
