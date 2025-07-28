@@ -26,56 +26,63 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Check if user exists by listing users with email filter
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-    const existingUser = existingUsers.users?.find(user => user.email === email)
-    
-    if (existingUser) {
-      // Update existing user password
-      const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-        existingUser.id,
-        { 
-          password,
-          email_confirm: true
-        }
-      )
-      
-      if (updateError) {
-        console.error('Error updating user:', updateError)
-        return new Response(
-          JSON.stringify({ error: 'Failed to update user password' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+    // Try to create or update the user directly
+    const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        full_name: 'Dale Norris'
       }
+    })
 
-      return new Response(
-        JSON.stringify({ message: 'User password updated successfully' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    } else {
-      // Create new user if doesn't exist
-      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: {
-          full_name: 'Dale Norris'
+    if (createError) {
+      // If user already exists, try to update password
+      if (createError.message?.includes('already registered') || createError.message?.includes('already exists')) {
+        // Get user by email using RPC or direct query
+        const { data: users } = await supabaseAdmin.auth.admin.listUsers()
+        const existingUser = users.users?.find(user => user.email === email)
+        
+        if (existingUser) {
+          const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+            existingUser.id,
+            { 
+              password,
+              email_confirm: true
+            }
+          )
+          
+          if (updateError) {
+            console.error('Error updating user:', updateError)
+            return new Response(
+              JSON.stringify({ error: 'Failed to update user password' }),
+              { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+          }
+
+          return new Response(
+            JSON.stringify({ message: 'User password updated successfully' }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        } else {
+          return new Response(
+            JSON.stringify({ error: 'User exists but could not be found for update' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
         }
-      })
-
-      if (createError) {
+      } else {
         console.error('Error creating user:', createError)
         return new Response(
-          JSON.stringify({ error: 'Failed to create user' }),
+          JSON.stringify({ error: `Failed to create user: ${createError.message}` }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
-
-      return new Response(
-        JSON.stringify({ message: 'User created successfully', user: newUser }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
     }
+
+    return new Response(
+      JSON.stringify({ message: 'User created successfully', user: newUser }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
 
   } catch (error) {
     console.error('Error in setup-admin-user function:', error)
