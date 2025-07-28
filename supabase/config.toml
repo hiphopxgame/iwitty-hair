@@ -2,3 +2,6 @@ project_id = "vtknmauyvmuaryttnenx"
 
 [functions.setup-admin-user]
 verify_jwt = false
+
+[functions.update-admin-user]
+verify_jwt = false

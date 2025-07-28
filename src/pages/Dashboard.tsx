@@ -211,6 +211,16 @@ const DashboardPage = () => {
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
+                            <AdminAccountSettings 
+                              currentAdmin={{
+                                id: admin.user_id || admin.id,
+                                email: admin.email,
+                                full_name: admin.full_name,
+                                created_at: admin.created_at
+                              }}
+                              isCurrentUser={admin.email === user?.email}
+                              onUpdate={fetchAdminAccounts}
+                            />
                             <Badge variant={admin.is_active ? "default" : "secondary"}>
                               {admin.is_active ? "Active" : "Inactive"}
                             </Badge>

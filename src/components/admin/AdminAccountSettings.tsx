@@ -15,10 +15,11 @@ interface AdminAccountSettingsProps {
     full_name: string;
     created_at: string;
   };
+  isCurrentUser?: boolean;
   onUpdate: () => void;
 }
 
-const AdminAccountSettings = ({ currentAdmin, onUpdate }: AdminAccountSettingsProps) => {
+const AdminAccountSettings = ({ currentAdmin, isCurrentUser = true, onUpdate }: AdminAccountSettingsProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -57,40 +58,79 @@ const AdminAccountSettings = ({ currentAdmin, onUpdate }: AdminAccountSettingsPr
 
     setLoading(true);
     try {
-      // Update email if changed
-      if (formData.email !== currentAdmin.email) {
-        const { error: emailError } = await supabase.auth.updateUser({
-          email: formData.email
+      if (isCurrentUser) {
+        // Current user updating their own account
+        // Update email if changed
+        if (formData.email !== currentAdmin.email) {
+          const { error: emailError } = await supabase.auth.updateUser({
+            email: formData.email
+          });
+          
+          if (emailError) {
+            throw emailError;
+          }
+        }
+
+        // Update password if provided
+        if (formData.password) {
+          const { error: passwordError } = await supabase.auth.updateUser({
+            password: formData.password
+          });
+          
+          if (passwordError) {
+            throw passwordError;
+          }
+        }
+
+        // Update user metadata for full name
+        const { error: metadataError } = await supabase.auth.updateUser({
+          data: {
+            full_name: formData.full_name
+          }
         });
-        
-        if (emailError) {
-          throw emailError;
-        }
-      }
 
-      // Update password if provided
-      if (formData.password) {
-        const { error: passwordError } = await supabase.auth.updateUser({
-          password: formData.password
+        if (metadataError) {
+          throw metadataError;
+        }
+      } else {
+        // Admin updating another admin's account via edge function
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          throw new Error('Not authenticated');
+        }
+
+        const updates: any = {};
+        
+        if (formData.email !== currentAdmin.email) {
+          updates.email = formData.email;
+        }
+        
+        if (formData.password) {
+          updates.password = formData.password;
+        }
+        
+        if (formData.full_name !== currentAdmin.full_name) {
+          updates.full_name = formData.full_name;
+        }
+
+        const { data, error } = await supabase.functions.invoke('update-admin-user', {
+          body: {
+            adminUserId: currentAdmin.id,
+            updates,
+            requestingUserId: user.id
+          }
         });
-        
-        if (passwordError) {
-          throw passwordError;
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.error) {
+          throw new Error(data.error);
         }
       }
 
-      // Update user metadata for full name
-      const { error: metadataError } = await supabase.auth.updateUser({
-        data: {
-          full_name: formData.full_name
-        }
-      });
-
-      if (metadataError) {
-        throw metadataError;
-      }
-
-      // Update admin accounts table if it exists
+      // Update admin accounts table if it exists (for both cases)
       try {
         const { error: adminError } = await supabase
           .from('admin_accounts')
@@ -111,7 +151,7 @@ const AdminAccountSettings = ({ currentAdmin, onUpdate }: AdminAccountSettingsPr
 
       toast({
         title: "Success",
-        description: "Account details updated successfully",
+        description: `${isCurrentUser ? 'Your account' : 'Admin account'} updated successfully`,
       });
 
       setIsOpen(false);
