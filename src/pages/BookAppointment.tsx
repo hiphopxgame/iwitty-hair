@@ -92,7 +92,7 @@ const BookAppointmentPage = () => {
       }
 
       const { data, error } = await supabase
-        .from('appointments')
+        .from('iwitty_appointments')
         .insert({
           client_id: user.id,
           style_id: selectedStyle?.id || null,
