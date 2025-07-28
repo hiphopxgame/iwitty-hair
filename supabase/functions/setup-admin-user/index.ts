@@ -7,8 +7,12 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log('Starting setup-admin-user function')
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    
+    console.log('Environment variables loaded')
     
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
@@ -17,7 +21,10 @@ Deno.serve(async (req) => {
       }
     })
 
+    console.log('Supabase admin client created')
+
     const { email, password } = await req.json()
+    console.log('Request parsed, email:', email)
 
     if (!email || !password) {
       return new Response(
