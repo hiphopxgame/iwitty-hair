@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const SetupAdmin = () => {
   const [loading, setLoading] = useState(false);
@@ -11,31 +12,21 @@ const SetupAdmin = () => {
   const handleSetupUser = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/functions/v1/setup-admin-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('setup-admin-user', {
+        body: {
           email: 'Kandiyams_2000@yahoo.com',
           password: 'iL0v3u!&82'
-        })
+        }
       });
 
-      const result = await response.json();
-      
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: result.message,
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: result.error,
-          variant: "destructive",
-        });
+      if (error) {
+        throw error;
       }
+      
+      toast({
+        title: "Success",
+        description: data.message,
+      });
     } catch (error) {
       console.error('Setup error:', error);
       toast({
