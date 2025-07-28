@@ -26,7 +26,19 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Try to create or update the user directly
+    // Check if user already exists first
+    const { data: users } = await supabaseAdmin.auth.admin.listUsers()
+    const existingUser = users.users?.find(user => user.email === email)
+    
+    if (existingUser) {
+      console.log('User already exists:', existingUser.email)
+      return new Response(
+        JSON.stringify({ message: 'Admin user already exists and is ready to use' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Only try to create if user doesn't exist
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
@@ -37,46 +49,11 @@ Deno.serve(async (req) => {
     })
 
     if (createError) {
-      // If user already exists, try to update password
-      if (createError.message?.includes('already registered') || createError.message?.includes('already exists')) {
-        // Get user by email using RPC or direct query
-        const { data: users } = await supabaseAdmin.auth.admin.listUsers()
-        const existingUser = users.users?.find(user => user.email === email)
-        
-        if (existingUser) {
-          const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-            existingUser.id,
-            { 
-              password,
-              email_confirm: true
-            }
-          )
-          
-          if (updateError) {
-            console.error('Error updating user:', updateError)
-            return new Response(
-              JSON.stringify({ error: 'Failed to update user password' }),
-              { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-          }
-
-          return new Response(
-            JSON.stringify({ message: 'User password updated successfully' }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          )
-        } else {
-          return new Response(
-            JSON.stringify({ error: 'User exists but could not be found for update' }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          )
-        }
-      } else {
-        console.error('Error creating user:', createError)
-        return new Response(
-          JSON.stringify({ error: `Failed to create user: ${createError.message}` }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
+      console.error('Error creating user:', createError)
+      return new Response(
+        JSON.stringify({ error: `Failed to create user: ${createError.message}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     return new Response(
