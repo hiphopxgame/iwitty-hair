@@ -24,7 +24,7 @@ export const AdminServices = () => {
   const fetchServices = async () => {
     try {
       const { data } = await supabase
-        .from('hair_styles')
+        .from('iwitty_hair_styles')
         .select('*')
         .order('name');
 
@@ -46,12 +46,12 @@ export const AdminServices = () => {
 
       if (editingService) {
         await supabase
-          .from('hair_styles')
+          .from('iwitty_hair_styles')
           .update(serviceData)
           .eq('id', editingService.id);
       } else {
         await supabase
-          .from('hair_styles')
+          .from('iwitty_hair_styles')
           .insert([serviceData]);
       }
       
@@ -71,7 +71,7 @@ export const AdminServices = () => {
   const deleteService = async (id: string) => {
     try {
       await supabase
-        .from('hair_styles')
+        .from('iwitty_hair_styles')
         .delete()
         .eq('id', id);
       

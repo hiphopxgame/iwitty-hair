@@ -1391,6 +1391,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_iwitty_appointments_client_profile"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "iwitty_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "iwitty_appointments_style_id_fkey"
             columns: ["style_id"]
             isOneToOne: false

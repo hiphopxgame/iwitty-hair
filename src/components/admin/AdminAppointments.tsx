@@ -54,30 +54,35 @@ export const AdminAppointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const { data: appointmentsData, error } = await supabase
+      // First, get appointments with hair styles
+      const { data: appointmentsData, error: appointmentsError } = await supabase
         .from('iwitty_appointments')
         .select(`
           *,
-          iwitty_hair_styles (name),
-          iwitty_profiles (first_name, last_name, phone, user_id)
+          iwitty_hair_styles (name)
         `)
         .order('appointment_date', { ascending: true });
 
-      if (error) throw error;
+      if (appointmentsError) throw appointmentsError;
 
-      // Get client emails from user data (we'll use a workaround since we can't directly query auth.users)
-      const appointmentsWithEmails = await Promise.all(
+      // Then, get profile information separately using the client_id
+      const appointmentsWithProfiles = await Promise.all(
         (appointmentsData || []).map(async (appointment) => {
-          // For now, we'll use the user_id to potentially fetch from a profile or set a placeholder
-          // In a real implementation, you might want to store email in iwitty_profiles table
+          const { data: profile } = await supabase
+            .from('iwitty_profiles')
+            .select('first_name, last_name, phone, user_id')
+            .eq('user_id', appointment.client_id)
+            .single();
+
           return {
             ...appointment,
-            client_email: appointment.iwitty_profiles?.user_id || 'client@example.com' // Placeholder - update this based on your auth setup
+            iwitty_profiles: profile,
+            client_email: 'client@example.com' // Placeholder for now
           };
         })
       );
 
-      setAppointments(appointmentsWithEmails as Appointment[]);
+      setAppointments(appointmentsWithProfiles as Appointment[]);
     } catch (error) {
       console.error('Error fetching appointments:', error);
       toast({

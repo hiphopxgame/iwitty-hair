@@ -34,14 +34,14 @@ export const AdminPortfolio = () => {
     try {
       const [portfolioRes, stylesRes] = await Promise.all([
         supabase
-          .from('portfolio_images')
+          .from('iwitty_portfolio_images')
           .select(`
             *,
-            hair_styles (name)
+            iwitty_hair_styles (name)
           `)
           .order('display_order'),
         supabase
-          .from('hair_styles')
+          .from('iwitty_hair_styles')
           .select('*')
           .order('name')
       ]);
@@ -90,7 +90,7 @@ export const AdminPortfolio = () => {
     
     try {
       const { data, error } = await supabase
-        .from('hair_styles')
+        .from('iwitty_hair_styles')
         .insert([{ name: newStyleName.trim() }])
         .select()
         .single();
@@ -121,12 +121,12 @@ export const AdminPortfolio = () => {
       
       if (editingItem) {
         await supabase
-          .from('portfolio_images')
+          .from('iwitty_portfolio_images')
           .update(itemData)
           .eq('id', editingItem.id);
       } else {
         await supabase
-          .from('portfolio_images')
+          .from('iwitty_portfolio_images')
           .insert([itemData]);
       }
       
@@ -151,7 +151,7 @@ export const AdminPortfolio = () => {
   const deleteItem = async (id: string) => {
     try {
       await supabase
-        .from('portfolio_images')
+        .from('iwitty_portfolio_images')
         .delete()
         .eq('id', id);
       
@@ -283,7 +283,7 @@ export const AdminPortfolio = () => {
                 className="w-full h-48 object-cover rounded mb-3"
               />
               <h3 className="font-semibold">{item.title}</h3>
-              <p className="text-sm text-muted-foreground">{item.hair_styles?.name}</p>
+              <p className="text-sm text-muted-foreground">{item.iwitty_hair_styles?.name}</p>
               {item.client_name && (
                 <p className="text-sm">Client: {item.client_name}</p>
               )}

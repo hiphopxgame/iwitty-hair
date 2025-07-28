@@ -61,10 +61,10 @@ const DashboardPage = () => {
   const fetchAppointments = async () => {
     try {
       const { data } = await supabase
-        .from('appointments')
+        .from('iwitty_appointments')
         .select(`
           *,
-          hair_styles (name)
+          iwitty_hair_styles (name)
         `)
         .eq('client_id', user.id)
         .order('created_at', { ascending: false });
@@ -80,9 +80,8 @@ const DashboardPage = () => {
   const fetchAdminAccounts = async () => {
     try {
       const { data } = await supabase
-        .from('admin_accounts')
+        .from('iwitty_admin_accounts')
         .select('*')
-        .eq('project_id', 'iwitty-hair')
         .order('created_at', { ascending: true });
 
       setAdminAccounts(data || []);
@@ -273,7 +272,7 @@ const DashboardPage = () => {
                       <div key={apt.id} className="border rounded-lg p-4">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="font-semibold">{apt.hair_styles?.name || 'Style TBD'}</h3>
+                            <h3 className="font-semibold">{apt.iwitty_hair_styles?.name || 'Style TBD'}</h3>
                             <p className="text-sm text-muted-foreground">
                               {new Date(apt.appointment_date).toLocaleDateString()} at {apt.appointment_time}
                             </p>

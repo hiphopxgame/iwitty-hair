@@ -14,29 +14,39 @@ export const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await supabase
-        .from('braiding_profiles')
-        .select(`
-          *,
-          appointments (
-            id,
-            status,
-            appointment_date,
-            appointment_time,
-            special_requests,
-            price_quote,
-            hair_styles (
-              name
-            )
-          )
-        `)
-        .eq('project_id', 'iwitty-hair')
+      // First get profiles
+      const { data: profiles } = await supabase
+        .from('iwitty_profiles')
+        .select('*')
         .order('created_at', { ascending: false });
 
+      // Then get appointments for each profile separately
+      const usersWithAppointments = await Promise.all(
+        (profiles || []).map(async (profile) => {
+          const { data: appointments } = await supabase
+            .from('iwitty_appointments')
+            .select(`
+              id,
+              status,
+              appointment_date,
+              appointment_time,
+              special_requests,
+              price_quote,
+              iwitty_hair_styles (name)
+            `)
+            .eq('client_id', profile.user_id);
+
+          return {
+            ...profile,
+            appointments: appointments || []
+          };
+        })
+      );
+
       // Filter to only show clients who have at least one appointment
-      const clientsWithAppointments = data?.filter(user => 
+      const clientsWithAppointments = usersWithAppointments.filter(user => 
         user.appointments && user.appointments.length > 0
-      ) || [];
+      );
 
       setUsers(clientsWithAppointments);
     } catch (error) {
@@ -133,7 +143,7 @@ export const AdminUsers = () => {
                         <div key={appointment.id} className="text-sm p-2 bg-muted/30 rounded">
                           <div className="flex justify-between items-start">
                             <div>
-                              <p><strong>{appointment.hair_styles?.name || 'Service'}</strong></p>
+                              <p><strong>{appointment.iwitty_hair_styles?.name || 'Service'}</strong></p>
                               <p>{new Date(appointment.appointment_date).toLocaleDateString()} at {appointment.appointment_time}</p>
                               {appointment.special_requests && (
                                 <p className="text-xs text-muted-foreground mt-1">{appointment.special_requests}</p>
