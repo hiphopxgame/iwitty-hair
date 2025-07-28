@@ -2823,9 +2823,25 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      create_employee_auth_account: {
+        Args: { employee_email: string; temporary_password?: string }
+        Returns: string
+      }
       format_service_name: {
         Args: { service_slug: string }
         Returns: string
+      }
+      get_admin_users: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          name: string
+          is_admin: boolean
+          created_at: string
+          updated_at: string
+          last_sign_in_at: string
+        }[]
       }
       handle_community_purchase: {
         Args: { p_user_id: string; p_cash_amount: number }
