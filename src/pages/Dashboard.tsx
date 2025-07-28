@@ -12,6 +12,7 @@ import { AdminAppointments } from '@/components/admin/AdminAppointments';
 import { AdminPortfolio } from '@/components/admin/AdminPortfolio';
 import { AdminServices } from '@/components/admin/AdminServices';
 import { AdminUsers } from '@/components/admin/AdminUsers';
+import AdminAccountSettings from '@/components/admin/AdminAccountSettings';
 
 const DashboardPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -128,6 +129,15 @@ const DashboardPage = () => {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
+                    <AdminAccountSettings 
+                      currentAdmin={{
+                        id: currentAdminDetails.user_id || user.id,
+                        email: currentAdminDetails.email,
+                        full_name: currentAdminDetails.full_name,
+                        created_at: currentAdminDetails.created_at
+                      }}
+                      onUpdate={fetchAdminAccounts}
+                    />
                     <Badge variant="default">Active Admin</Badge>
                     {currentAdminDetails.email === 'tyronenorris@gmail.com' && (
                       <Badge variant="outline">Super Admin</Badge>
