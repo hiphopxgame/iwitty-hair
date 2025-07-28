@@ -2423,6 +2423,7 @@ export type Database = {
           id: string
           instagram_url: string | null
           is_email_public: boolean | null
+          project_id: string
           soundcloud_url: string | null
           spotify_url: string | null
           state: string | null
@@ -2444,6 +2445,7 @@ export type Database = {
           id: string
           instagram_url?: string | null
           is_email_public?: boolean | null
+          project_id?: string
           soundcloud_url?: string | null
           spotify_url?: string | null
           state?: string | null
@@ -2465,6 +2467,7 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           is_email_public?: boolean | null
+          project_id?: string
           soundcloud_url?: string | null
           spotify_url?: string | null
           state?: string | null
